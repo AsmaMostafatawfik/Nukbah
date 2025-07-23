@@ -1,0 +1,16 @@
+/* app/rtl.css */
+[dir="rtl"] .rtl\:text-right {
+  text-align: right;
+}
+
+[dir="rtl"] .rtl\:mr-2 {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+[dir="rtl"] .rtl\:ml-auto {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+/* Add more RTL overrides as needed */
