@@ -40,7 +40,7 @@ export default function QuestionAnswersPage() {
 
         // Fetch question details
         const questionResponse = await fetch(
-          `http://elearning1.runasp.net/api/Teacher/Questions/${examId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/Questions/${examId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -61,7 +61,7 @@ export default function QuestionAnswersPage() {
 
         // Fetch answers
         const answersResponse = await fetch(
-          `http://elearning1.runasp.net/api/Teacher/Answers/${questionId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/Answers/${questionId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -114,7 +114,7 @@ export default function QuestionAnswersPage() {
       }
 
       const response = await fetch(
-        `http://elearning1.runasp.net/api/Teacher/AddAnswer/${questionId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/AddAnswer/${questionId}`,
         {
           method: "POST",
           headers: {
@@ -162,7 +162,7 @@ export default function QuestionAnswersPage() {
       }
 
       const response = await fetch(
-        `http://elearning1.runasp.net/api/Teacher/DeleteAnswer/${answerId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/DeleteAnswer/${answerId}`,
         {
           method: "DELETE",
           headers: {

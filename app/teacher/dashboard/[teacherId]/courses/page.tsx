@@ -35,7 +35,7 @@ export default function CoursesPage() {
 
         // Fetch courses
         const coursesResponse = await fetch(
-          `http://elearning1.runasp.net/api/Teacher/AllCourses/${teacherId}`,
+         `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/AllCourses/${teacherId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -53,7 +53,7 @@ export default function CoursesPage() {
         const coursesWithStudents = await Promise.all(
           coursesData.map(async (course: any) => {
             const studentsResponse = await fetch(
-              `http://elearning1.runasp.net/api/Teacher/AllStudentInCourse/${course.id}`,
+              `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/AllStudentInCourse/${course.id}`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -101,7 +101,7 @@ export default function CoursesPage() {
       }
 
       const response = await fetch(
-        `http://elearning1.runasp.net/api/Teacher/DeleteCourse/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/DeleteCourse/${id}`,
         {
           method: "DELETE",
           headers: {

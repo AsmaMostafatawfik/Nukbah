@@ -28,7 +28,7 @@ export default function RegisterPage() {
     SchoolName: "",
     EducationalStage: 0, // 0 for elementary, 1 for middle, 2 for high school, 3 for university, 4 for other
     GradeLevel: 1, // Start with grade 1 as default
-    Image: null as File | null
+    //Image: null as File | null
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -109,11 +109,11 @@ export default function RegisterPage() {
       formDataToSend.append('GradeLevel', formData.GradeLevel.toString());
       
       // Optional image
-      if (formData.Image) {
-        formDataToSend.append('Image', formData.Image, formData.Image.name);
-      }
+    //  if (formData.Image) {
+    //    formDataToSend.append('Image', formData.Image, formData.Image.name);
+    //  }
 
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://elearning1.runasp.net';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://elearning1.runasp.net';
       
       const response = await fetch(
         `${API_URL}/api/Account/StudentRegister`,
@@ -420,7 +420,7 @@ export default function RegisterPage() {
             </div>
 
             {/* Image Upload */}
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 صورة الشخصية (اختياري)
               </label>
@@ -434,7 +434,7 @@ export default function RegisterPage() {
               {formData.Image && (
                 <p className="text-sm text-green-600 mt-1">تم اختيار صورة</p>
               )}
-            </div>
+            </div> */}
 
             {/* Submit Button */}
             <button

@@ -29,9 +29,9 @@ export default function TeachersPage() {
       setLoading(false);
       return;
     }
-
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://elearning1.runasp.net';
     try {
-      const response = await fetch('http://elearning1.runasp.net/api/Admin/Teachers', {
+      const response = await fetch(`${API_URL}/api/Admin/Teachers`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -55,8 +55,10 @@ export default function TeachersPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('هل أنت متأكد من حذف هذا المعلم؟')) return;
 
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://elearning1.runasp.net';
+
     try {
-      const response = await fetch(`http://elearning1.runasp.net/api/Admin/DeleteUser/${id}`, {
+      const response = await fetch(`${API_URL}/api/Admin/DeleteUser/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -78,10 +80,13 @@ export default function TeachersPage() {
 
   const handleActivate = async (id: string) => {
     if (!confirm('هل أنت متأكد من تفعيل حساب هذا المعلم؟')) return;
+
+
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://elearning1.runasp.net';
     
     setActivatingId(id);
     try {
-      const response = await fetch('http://elearning1.runasp.net/api/Admin/Activate_Account', {
+      const response = await fetch(`${API_URL}/api/Admin/Activate_Account`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

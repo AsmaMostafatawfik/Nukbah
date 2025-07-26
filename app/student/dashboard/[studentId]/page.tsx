@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import router from "next/router";
 
 interface Course {
   id: number;
@@ -27,7 +28,7 @@ export default function DashboardPage() {
         if (!token) throw new Error("Authentication required");
 
         const response = await fetch(
-          "http://elearning1.runasp.net/api/Student/AllCourses",
+          `${process.env.NEXT_PUBLIC_API_URL}/api/Student/AllCourses`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -201,7 +202,7 @@ export default function DashboardPage() {
             {hasMoreCourses && (
               <div className="text-center mt-12">
                 <button
-                  onClick={() => setDisplayCount(prev => prev + 3)}
+                  onClick={() => router.push('/student/dashboard/courses')}
                   className="px-8 py-3 border-2 border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-600 hover:text-white transition-all duration-300 font-bold"
                 >
                   عرض المزيد

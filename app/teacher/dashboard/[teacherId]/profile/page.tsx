@@ -31,7 +31,7 @@ export default function TeacherProfilePage() {
         }
 
         const response = await fetch(
-          `http://elearning1.runasp.net/api/Teacher/TeacherProfile/${teacherId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/TeacherProfile/${teacherId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

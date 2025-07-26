@@ -57,7 +57,7 @@ export default function CourseSessionsPage() {
         }
 
         const response = await fetch(
-          `http://elearning1.runasp.net/api/Teacher/AllSessions/${courseId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/AllSessions/${courseId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -94,7 +94,7 @@ export default function CourseSessionsPage() {
       }
 
       const response = await fetch(
-        `http://elearning1.runasp.net/api/Teacher/AllVideoForSession/${sessionId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/AllVideoForSession/${sessionId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -128,7 +128,7 @@ export default function CourseSessionsPage() {
       }
 
       const response = await fetch(
-        `http://elearning1.runasp.net/api/Teacher/AllExams/${sessionId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/AllExams/${sessionId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -180,7 +180,7 @@ export default function CourseSessionsPage() {
       }
 
       const response = await fetch(
-        `http://elearning1.runasp.net/api/Teacher/AddSession/${courseId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/AddSession/${courseId}`,
         {
           method: "POST",
           headers: {
@@ -227,7 +227,7 @@ export default function CourseSessionsPage() {
       }
 
       const response = await fetch(
-        `http://elearning1.runasp.net/api/Teacher/DeleteSession/${sessionId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/DeleteSession/${sessionId}`,
         {
           method: "DELETE",
           headers: {
@@ -272,7 +272,7 @@ export default function CourseSessionsPage() {
       }
 
       const response = await fetch(
-        `http://elearning1.runasp.net/api/Teacher/DeleteExam/${examId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/DeleteExam/${examId}`,
         {
           method: "DELETE",
           headers: {

@@ -29,7 +29,7 @@ export default function AddSessionPage() {
       }
 
       const response = await fetch(
-        `http://elearning1.runasp.net/api/Teacher/AddSession/${courseId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/AddSession/${courseId}`,
         {
           method: "POST",
           headers: {

@@ -35,7 +35,7 @@ export default function ProfilePage() {
         }
 
         const response = await fetch(
-          `http://elearning1.runasp.net/api/Student/StudentProfile/${studentId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/Student/StudentProfile/${studentId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

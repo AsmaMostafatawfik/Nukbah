@@ -127,7 +127,7 @@ export default function AddExamToSession() {
       };
 
       const response = await fetch(
-        `http://elearning1.runasp.net/api/Teacher/AddExamToSession/${sessionId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/AddExamToSession/${sessionId}`,
         {
           method: 'POST',
           headers: { 

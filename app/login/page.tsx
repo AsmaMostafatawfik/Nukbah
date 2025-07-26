@@ -656,7 +656,7 @@ export default function LoginPage() {
       formDataToSend.append('Email', formData.Email.trim());
       formDataToSend.append('Password', formData.Password);
 
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://elearning1.runasp.net';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://elearning1.runasp.net';
       
       const response = await fetch(
         `${API_URL}/api/Account/Login`,

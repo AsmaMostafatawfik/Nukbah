@@ -1,4 +1,5 @@
 
+
 "use client";
 import { useState, useEffect, Fragment } from "react";
 import { PlusCircle, MessageSquarePlus, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
@@ -37,7 +38,7 @@ export default function ExamQuestionsPage() {
         }
 
         const response = await fetch(
-          `http://elearning1.runasp.net/api/Teacher/Questions/${examId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/Questions/${examId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -69,7 +70,7 @@ export default function ExamQuestionsPage() {
       }
 
       const response = await fetch(
-        `http://elearning1.runasp.net/api/Teacher/Answers/${questionId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/Answers/${questionId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
