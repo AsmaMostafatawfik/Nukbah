@@ -712,7 +712,7 @@ export default function LoginPage() {
         } else if (loginData.roles.includes("Teacher")) {
           router.push(`/teacher/dashboard/${loginData.id}`); // Use ID in route
         } else if (loginData.roles.includes("Student")) {
-          router.push(`/student/dashboard/${loginData.id}`);
+          router.push(`/student/dashboard`);
         } else {
           router.push("/");
         }
