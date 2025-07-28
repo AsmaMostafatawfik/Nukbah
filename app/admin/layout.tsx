@@ -150,7 +150,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const handleLogout = () => {
     // Replace with actual logout logic
-    router.push('/admin/login');
+    router.push('/login');
   };
 
   return (

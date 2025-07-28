@@ -1,11 +1,13 @@
-// app/student/dashboard/courses/[courseId]/enrollment/page.tsx
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import Image from "next/image";
 
 interface UserData {
-  studentId?: string;
-  // Add other user properties as needed
+  id?: string;
+  username?: string;
+  email?: string;
+  roles?: string[];
 }
 
 export default function EnrollmentPage() {
@@ -15,12 +17,13 @@ export default function EnrollmentPage() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<number>(0);
   const [paymentReference, setPaymentReference] = useState<string>("");
+  const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
+  const [formValid, setFormValid] = useState(false);
   const router = useRouter();
   const params = useParams();
   const { courseId } = params;
 
   useEffect(() => {
-    // Get user data from where you store it after login (localStorage, context, etc.)
     const token = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     
@@ -34,52 +37,81 @@ export default function EnrollmentPage() {
     }
   }, [router]);
 
+  useEffect(() => {
+    const isValid = Boolean(
+      userData?.id &&
+      paymentReference.trim() !== "" &&
+      (paymentMethod === 0 || screenshotFile !== null)
+    );
+    setFormValid(isValid);
+  }, [userData, paymentMethod, paymentReference, screenshotFile]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setScreenshotFile(e.target.files[0]);
+    } else {
+      setScreenshotFile(null);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formValid) {
+      setError("الرجاء ملء جميع الحقول المطلوبة");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
       const token = localStorage.getItem("token");
-      if (!token || !userData?.studentId) {
+      if (!token || !userData?.id) {
         router.push("/login");
         return;
       }
 
       const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://elearning1.runasp.net";
       
+      const formData = new FormData();
+      formData.append("StudentId", userData.id);
+      formData.append("PaymentReference", paymentReference);
+      formData.append("PaymentMethod", paymentMethod.toString());
+      
+      if (screenshotFile) {
+        formData.append("ScreenShot", screenshotFile);
+      }
+
       const response = await fetch(
         `${API_URL}/api/Student/EnrollmentRequest/${courseId}`,
         {
           method: "POST",
           headers: {
             "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            studentId: userData.studentId,
-            paymentReference: paymentReference,
-            paymentMethod: paymentMethod
-          })
+          body: formData
         }
       );
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to submit enrollment request");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "فشل إرسال طلب الالتحاق");
       }
 
       setSuccess(true);
+      setTimeout(() => {
+        router.push(`/student/dashboard/courses/${courseId}`);
+      }, 2000);
     } catch (err) {
-      console.error("Enrollment error:", err);
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
+      setError(err instanceof Error ? err.message : "حدث خطأ غير متوقع");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8" dir="rtl">
       <button 
         onClick={() => router.back()}
         className="mb-6 flex items-center text-indigo-600 hover:text-indigo-800"
@@ -91,7 +123,20 @@ export default function EnrollmentPage() {
       </button>
 
       <div className="bg-white rounded-xl shadow-md overflow-hidden p-6 max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">طلب الالتحاق بالمقرر</h1>
+        <div className="flex justify-center mb-6">
+          <div className="relative w-40 h-20">
+            <Image
+              src="/images/logo.png"
+              alt="Logo"
+              fill
+              sizes="(max-width: 768px) 200px, 300px"
+              className="object-contain"
+              priority
+            />
+          </div>
+        </div>
+
+        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">طلب الالتحاق بالمقرر</h1>
         
         {success ? (
           <div className="text-center py-8">
@@ -101,16 +146,16 @@ export default function EnrollmentPage() {
               </svg>
             </div>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">تم إرسال طلب الالتحاق بنجاح</h2>
-            <p className="text-gray-600 mb-6">سيتم مراجعة طلبك وإعلامك بالنتيجة</p>
+            <p className="text-gray-600 mb-6">سيتم تحويلك إلى صفحة المقرر تلقائياً...</p>
             <button
               onClick={() => router.push(`/student/dashboard/courses/${courseId}`)}
               className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
             >
-              العودة إلى صفحة المقرر
+              الانتقال الآن
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -122,16 +167,16 @@ export default function EnrollmentPage() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                   required
                 >
-                  <option value={0}>الدفع عند الاستلام</option>
-                  <option value={1}>بطاقة ائتمان</option>
-                  <option value={2}>محفظة إلكترونية</option>
-                  <option value={3}>تحويل بنكي</option>
+                  <option value={0}>Visa</option>
+                  <option value={1}>Fawry</option>
+                  <option value={2}>Vodafone Cash</option>
+                  <option value={3}>InstaPay</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  رقم المرجع الدفعي
+                  رقم المرجع الدفعي *
                 </label>
                 <input
                   type="text"
@@ -143,6 +188,33 @@ export default function EnrollmentPage() {
                 />
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  صورة إثبات الدفع {paymentMethod !== 0 && '*'}
+                </label>
+                <input
+                  type="file"
+                  onChange={handleFileChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                  accept="image/*"
+                  required={paymentMethod !== 0}
+                />
+                {screenshotFile && (
+                  <div className="mt-4 relative w-full h-40 border rounded-lg overflow-hidden">
+                    <Image
+                      src={URL.createObjectURL(screenshotFile)}
+                      alt="صورة الإثبات"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-contain"
+                    />
+                  </div>
+                )}
+                {paymentMethod !== 0 && !screenshotFile && (
+                  <p className="mt-1 text-sm text-red-500">هذا الحقل مطلوب</p>
+                )}
+              </div>
+
               {error && (
                 <div className="text-red-500 text-sm py-2">
                   {error}
@@ -152,8 +224,12 @@ export default function EnrollmentPage() {
               <div className="pt-4">
                 <button
                   type="submit"
-                  disabled={loading || !userData?.studentId}
-                  className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                  disabled={loading || !formValid}
+                  className={`w-full py-3 px-4 rounded-lg transition-colors ${
+                    loading || !formValid
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                  }`}
                 >
                   {loading ? (
                     <span className="flex items-center justify-center">

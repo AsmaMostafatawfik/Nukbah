@@ -1,3 +1,5 @@
+
+
 "use client";
 import { useState, useEffect, Fragment } from "react";
 import { PlusCircle, Video, FileText, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
@@ -22,7 +24,7 @@ interface Video {
 interface Exam {
   id: number;
   title: string;
-  type: number; // 0: quiz, 1: midterm, 2: final
+  type: number;
   startTime: string;
   endTime: string;
   durationMinutes: number;
@@ -47,6 +49,11 @@ export default function CourseSessionsPage() {
     published: new Date().toISOString(),
     courseId: Number(courseId)
   });
+
+  const getFullVideoUrl = (url: string) => {
+    if (url.startsWith('http')) return url;
+    return `https://elearning1.runasp.net${url.startsWith('/') ? url : `/${url}`}`;
+  };
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -356,12 +363,6 @@ export default function CourseSessionsPage() {
     });
   };
 
-  const extractYouTubeId = (url: string) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
-  };
-
   if (loading) {
     return <div className="text-center py-8">جاري التحميل...</div>;
   }
@@ -517,43 +518,31 @@ export default function CourseSessionsPage() {
                               <h3 className="font-medium mb-3">فيديوهات الجلسة</h3>
                               {sessionVideos[session.id]?.length > 0 ? (
                                 <div className="space-y-3">
-                                  {sessionVideos[session.id].map((video, idx) => {
-                                    const youtubeId = extractYouTubeId(video.url);
-                                    return (
-                                      <div key={`video-${session.id}-${idx}`} className="border p-3 rounded-lg">
-                                        <div className="flex justify-between items-start">
-                                          <div>
-                                            <h4 className="font-medium">{video.title}</h4>
-                                            <p className="text-sm text-gray-600">
-                                              النوع: {getVideoTypeName(video.type)} | المدة: {formatDuration(video.duration)}
-                                            </p>
-                                          </div>
-                                          <a 
-                                            href={video.url} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="text-blue-600 hover:underline"
-                                          >
-                                            مشاهدة الفيديو
-                                          </a>
+                                  {sessionVideos[session.id].map((video, idx) => (
+                                    <div key={`video-${session.id}-${idx}`} className="border p-3 rounded-lg">
+                                      <div className="flex justify-between items-start mb-2">
+                                        <div>
+                                          <h4 className="font-medium">{video.title}</h4>
+                                          <p className="text-sm text-gray-600">
+                                            النوع: {getVideoTypeName(video.type)} | المدة: {formatDuration(video.duration)}
+                                          </p>
                                         </div>
-                                        {youtubeId && (
-                                          <div className="mt-2">
-                                            <iframe
-                                              width="100%"
-                                              height="200"
-                                              src={`https://www.youtube.com/embed/${youtubeId}`}
-                                              title={video.title}
-                                              frameBorder="0"
-                                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                              allowFullScreen
-                                              className="rounded-lg"
-                                            ></iframe>
-                                          </div>
-                                        )}
                                       </div>
-                                    );
-                                  })}
+                                      <div className="mt-2">
+                                        <video 
+                                          controls
+                                          className="w-full rounded-lg bg-black"
+                                          style={{ maxHeight: '400px' }}
+                                        >
+                                          <source 
+                                            src={getFullVideoUrl(video.url)} 
+                                            type={`video/${video.url.split('.').pop()?.split('?')[0] || 'mp4'}`}
+                                          />
+                                          متصفحك لا يدعم تشغيل الفيديو
+                                        </video>
+                                      </div>
+                                    </div>
+                                  ))}
                                 </div>
                               ) : (
                                 <p className="text-gray-500">لا توجد فيديوهات لهذه الجلسة</p>
