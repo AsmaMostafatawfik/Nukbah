@@ -296,7 +296,7 @@ export default function AddExamToSession() {
           <button
             type="button"
             className="px-6 py-3 bg-gray-300 rounded-lg hover:bg-gray-400 text-lg"
-            onClick={() => router.push(`/teacher/dashboard/${teacherId}/courses/${courseId}/sessions/${sessionId}`)}
+            onClick={() => router.push(`/teacher/dashboard/${teacherId}/courses/${courseId}/sessions`)}
           >
             إلغاء
           </button>

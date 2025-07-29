@@ -902,7 +902,7 @@ export default function AddVideoPage() {
             <button
               type="button"
               className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              onClick={() => router.push(`/teacher/dashboard/${teacherId}/courses/${courseId}/sessions/${sessionId}`)}
+              onClick={() => router.push(`/teacher/dashboard/${teacherId}/courses/${courseId}/sessions`)}
             >
               إلغاء
             </button>
