@@ -74,11 +74,10 @@
 //         }
 
 //         const answersData = await answersResponse.json();
-//         // Ensure all answers have an id, or generate a temporary one
 //         const validatedAnswers = Array.isArray(answersData) 
 //           ? answersData.map((answer, index) => ({
 //               ...answer,
-//               id: answer.id || index + 1 // Use existing id or generate temporary one
+//               id: answer.id || index + 1
 //             }))
 //           : [];
 //         setAnswers(validatedAnswers);
@@ -100,13 +99,11 @@
 //         throw new Error("Authentication required");
 //       }
 
-//       // Validate based on question type
 //       if (question?.type === 1 && answers.length >= 2) {
 //         throw new Error("True/False questions can only have two answers");
 //       }
 
 //       if (question?.type === 0 && newAnswer.isCorrect) {
-//         // For MCQ, ensure no other correct answers exist
 //         const hasCorrectAnswer = answers.some(answer => answer.isCorrect);
 //         if (hasCorrectAnswer) {
 //           throw new Error("MCQ can only have one correct answer");
@@ -134,10 +131,9 @@
 //       }
 
 //       const data = await response.json();
-//       // Ensure the new answer has an id
 //       const answerWithId = {
 //         ...data,
-//         id: data.id || answers.length + 1 // Use server id or generate temporary one
+//         id: data.id || answers.length + 1
 //       };
 //       setAnswers([...answers, answerWithId]);
 //       setNewAnswer({
@@ -156,7 +152,6 @@
 //         throw new Error("Authentication required");
 //       }
 
-//       // Prevent deletion if it's a True/False question and we'd have less than 2 answers
 //       if (question?.type === 1 && answers.length <= 2) {
 //         throw new Error("True/False questions must have exactly two answers");
 //       }
@@ -192,17 +187,17 @@
 //     return types[type] || "غير محدد";
 //   };
 
-//   if (loading) {
-//     return (
-//       <div className="flex justify-center items-center h-64">
-//         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-//       </div>
-//     );
-//   }
+//   // if (loading) {
+//   //   return (
+//   //     <div className="flex justify-center items-center h-64">
+//   //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+//   //     </div>
+//   //   );
+//   // }
 
 //   if (error) {
 //     return (
-//       <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+//       <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 mx-4">
 //         {error}
 //       </div>
 //     );
@@ -213,22 +208,24 @@
 //   }
 
 //   return (
-//     <div className="space-y-8" dir="rtl">
-//       <div className="flex justify-between items-center">
+//     <div className="space-y-8 p-4 md:p-8" dir="rtl">
+//       {/* Header Section */}
+//       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
 //         <button
 //           onClick={navigateBack}
-//           className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded-lg border"
+//           className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded-lg border w-full md:w-auto justify-center"
 //         >
 //           <ChevronLeft size={18} />
-//           العودة إلى الأسئلة
+//           <span>العودة إلى الأسئلة</span>
 //         </button>
-//         <div>
-//           <h1 className="text-3xl font-bold text-gray-800">إدارة الإجابات</h1>
+//         <div className="text-center md:text-right">
+//           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">إدارة الإجابات</h1>
 //           <p className="text-gray-600">نوع السؤال: {getQuestionTypeName(question.type)}</p>
 //         </div>
 //       </div>
 
-//       <div className="bg-white p-6 rounded-lg shadow">
+//       {/* Add Answer Form */}
+//       <div className="bg-white p-4 md:p-6 rounded-lg shadow">
 //         <h2 className="text-xl font-bold mb-4">إضافة إجابة جديدة</h2>
 //         <form onSubmit={handleAddAnswer} className="space-y-4">
 //           <div>
@@ -261,19 +258,22 @@
 //           )}
 //           <button
 //             type="submit"
-//             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded"
+//             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded w-full md:w-auto justify-center"
 //             disabled={question.type === 1 && answers.length >= 2}
 //           >
 //             <PlusCircle size={18} />
-//             إضافة الإجابة
-//             {question.type === 1 && answers.length >= 2 && (
-//               <span className="text-sm mr-2"> (يوجد إجابتان بالفعل)</span>
-//             )}
+//             <span>
+//               إضافة الإجابة
+//               {question.type === 1 && answers.length >= 2 && (
+//                 <span className="text-sm mr-2"> (يوجد إجابتان بالفعل)</span>
+//               )}
+//             </span>
 //           </button>
 //         </form>
 //       </div>
 
-//       <div className="bg-white p-6 rounded-lg shadow">
+//       {/* Answers List */}
+//       <div className="bg-white p-4 md:p-6 rounded-lg shadow">
 //         <div className="mb-4">
 //           <h2 className="text-xl font-bold">إجمالي الإجابات: {answers.length}</h2>
 //         </div>
@@ -283,18 +283,20 @@
 //             لا توجد إجابات متاحة
 //           </div>
 //         ) : (
-//           <div className="space-y-4">
+//           <div className="space-y-3">
 //             {answers.map((answer) => (
 //               <div 
-//                 key={`answer-${answer.id || Math.random()}`} // Fallback to random if id is missing
-//                 className={`border p-4 rounded-lg flex justify-between items-center ${
+//                 key={`answer-${answer.id || Math.random()}`}
+//                 className={`border p-3 md:p-4 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-3 ${
 //                   answer.isCorrect ? "bg-green-50 border-green-200" : "bg-white"
 //                 }`}
 //               >
-//                 <div className="flex items-start gap-3">
-//                   <div className={`mt-1 w-4 h-4 rounded-full ${answer.isCorrect ? "bg-green-500" : "bg-gray-300"}`}></div>
-//                   <div>
-//                     <p className="text-lg">{answer.text}</p>
+//                 <div className="flex items-start gap-3 flex-1">
+//                   <div className={`mt-1 w-4 h-4 rounded-full flex-shrink-0 ${
+//                     answer.isCorrect ? "bg-green-500" : "bg-gray-300"
+//                   }`}></div>
+//                   <div className="flex-1">
+//                     <p className="text-lg break-words">{answer.text}</p>
 //                     <p className="text-sm text-gray-600">
 //                       {answer.isCorrect ? "إجابة صحيحة" : "إجابة خاطئة"}
 //                     </p>
@@ -302,7 +304,7 @@
 //                 </div>
 //                 <button
 //                   onClick={() => handleDeleteAnswer(answer.id)}
-//                   className="p-2 text-red-600 hover:bg-red-50 rounded"
+//                   className="p-2 text-red-600 hover:bg-red-50 rounded self-end md:self-auto"
 //                   title="حذف الإجابة"
 //                   disabled={question.type === 1 && answers.length <= 2}
 //                 >
@@ -316,6 +318,7 @@
 //     </div>
 //   );
 // }
+
 
 
 
@@ -514,14 +517,6 @@ export default function QuestionAnswersPage() {
     return types[type] || "غير محدد";
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 mx-4">
@@ -565,24 +560,28 @@ export default function QuestionAnswersPage() {
               required
             />
           </div>
-          {question.type !== 1 && (
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="isCorrect"
-                checked={newAnswer.isCorrect}
-                onChange={(e) => setNewAnswer({...newAnswer, isCorrect: e.target.checked})}
-                className="w-4 h-4"
-                disabled={question.type === 0 && answers.some(a => a.isCorrect)}
-              />
-              <label htmlFor="isCorrect" className="font-medium">
-                إجابة صحيحة
-                {question.type === 0 && answers.some(a => a.isCorrect) && (
-                  <span className="text-sm text-gray-500 mr-2"> (يوجد إجابة صحيحة بالفعل)</span>
-                )}
-              </label>
-            </div>
-          )}
+          
+          {/* Show checkbox for all question types including True/False */}
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="isCorrect"
+              checked={newAnswer.isCorrect}
+              onChange={(e) => setNewAnswer({...newAnswer, isCorrect: e.target.checked})}
+              className="w-4 h-4"
+              disabled={
+                (question.type === 0 && answers.some(a => a.isCorrect)) || // MCQ can only have one correct answer
+                (question.type === 1 && answers.some(a => a.isCorrect) && newAnswer.isCorrect) // True/False can only have one correct answer
+              }
+            />
+            <label htmlFor="isCorrect" className="font-medium">
+              إجابة صحيحة
+              {(question.type === 0 || question.type === 1) && answers.some(a => a.isCorrect) && (
+                <span className="text-sm text-gray-500 mr-2"> (يوجد إجابة صحيحة بالفعل)</span>
+              )}
+            </label>
+          </div>
+          
           <button
             type="submit"
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded w-full md:w-auto justify-center"

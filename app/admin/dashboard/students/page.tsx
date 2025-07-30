@@ -15,7 +15,7 @@ interface Student {
   educationalStage: number;
   gradeLevel: number;
   image: string | null;
-  isActive: boolean;
+ 
 }
 
 export default function StudentsPage() {
@@ -71,7 +71,7 @@ export default function StudentsPage() {
 
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://elearning1.runasp.net';
 
-      const response = await fetch(`${API_URL}/api/Admin/DeleteStudent/${id}`, {
+      const response = await fetch(`${API_URL}/api/Admin/DeleteUser/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -94,11 +94,9 @@ export default function StudentsPage() {
                          student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          student.phoneNumber.includes(searchTerm);
 
-    const matchesStatus = statusFilter === 'all' || 
-                         (statusFilter === 'active' && student.isActive) || 
-                         (statusFilter === 'inactive' && !student.isActive);
+   
 
-    return matchesSearch && matchesStatus;
+    return matchesSearch ;
   });
 
   const getGenderText = (gender: number) => {
@@ -166,7 +164,7 @@ export default function StudentsPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <select 
+          {/* <select 
             className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
@@ -174,7 +172,7 @@ export default function StudentsPage() {
             <option value="all">جميع الحالات</option>
             <option value="active">نشط</option>
             <option value="inactive">غير نشط</option>
-          </select>
+          </select> */}
         </div>
       </div>
 
@@ -186,7 +184,7 @@ export default function StudentsPage() {
               <tr>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الطالب</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المعلومات الأساسية</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
+                {/* <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th> */}
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">إجراءات</th>
               </tr>
             </thead>
@@ -205,7 +203,7 @@ export default function StudentsPage() {
                         <div className="flex items-center">
                           {student.image ? (
                             <img 
-                              src={`data:image/jpeg;base64,${student.image}`} 
+                              src={`https://elearning1.runasp.net/${student.image}`} 
                               alt={student.fullName}
                               className="w-10 h-10 rounded-full object-cover"
                             />
@@ -226,21 +224,21 @@ export default function StudentsPage() {
                         <div className="text-sm text-gray-900">{student.phoneNumber}</div>
                         <div className="text-sm text-gray-500">{getStageText(student.educationalStage)} - {getGradeText(student.gradeLevel)}</div>
                       </td>
-                      <td className="px-6 py-4">
+                      {/* <td className="px-6 py-4">
                         <span className={`px-2 py-1 text-xs rounded-full ${
                           student.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                         }`}>
                           {student.isActive ? 'نشط' : 'غير نشط'}
                         </span>
-                      </td>
+                      </td> */}
                       <td className="px-6 py-4 text-sm font-medium flex gap-2 justify-end">
-                        <Link 
+                        {/* <Link 
                           href={`/admin/students/edit/${student.id}`}
                           className="text-blue-600 hover:text-blue-900 p-1"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <Edit size={18} />
-                        </Link>
+                        </Link> */}
                         <button 
                           className="text-red-600 hover:text-red-900 p-1"
                           onClick={(e) => {

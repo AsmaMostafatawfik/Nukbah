@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 export default function SetVideoViewsPage() {
   const params = useParams();
   const router = useRouter();
-  const { teacherId, courseId, videoId } = params;
+  const { teacherId, courseId,sessionId, videoId } = params;
   const [views, setViews] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
