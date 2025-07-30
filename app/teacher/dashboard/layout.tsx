@@ -108,9 +108,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <NavItem href="/courses" label="الدورات" icon={<BookOpen size={18} />} />
           <NavItem href="/Permissions" label="الاذونات" icon={<Users size={18} />} />
           <NavItem href="/grades" label="التقييمات" icon={<BarChart size={18} />} />
-          <NavItem href="/assignments" label="الواجبات" icon={<FileText size={18} />} />
+          {/* <NavItem href="/assignments" label="الواجبات" icon={<FileText size={18} />} />
           <NavItem href="/messages" label="الرسائل" icon={<MessageSquare size={18} />} />
-          <NavItem href="/settings" label="الإعدادات" icon={<Settings size={18} />} />
+          <NavItem href="/settings" label="الإعدادات" icon={<Settings size={18} />} /> */}
         </nav>
 
         <button

@@ -32,8 +32,44 @@
 //   backToSession: 'العودة إلى الجلسة',
 //   examCreated: 'تم إنشاء الاختبار بنجاح',
 //   requiredField: 'هذا الحقل مطلوب',
-//   publishNow: 'نشر الآن',
 // };
+
+// function InputField({ id, type = 'text', value, onChange, required = false, placeholder = '', min, disabled = false }: any) {
+//   return (
+//     <div className="mb-4">
+//       <input
+//         type={type}
+//         id={id}
+//         name={id}
+//         value={value}
+//         onChange={onChange}
+//         required={required}
+//         min={min}
+//         disabled={disabled}
+//         placeholder={placeholder}
+//         className={`w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-right ${disabled ? 'bg-gray-100' : ''}`}
+//       />
+//     </div>
+//   );
+// }
+
+// function SelectField({ id, value, onChange, options }: any) {
+//   return (
+//     <div className="mb-4">
+//       <select
+//         id={id}
+//         name={id}
+//         value={value}
+//         onChange={onChange}
+//         className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-right"
+//       >
+//         {options.map((opt: any) => (
+//           <option key={opt.value} value={opt.value}>{opt.label}</option>
+//         ))}
+//       </select>
+//     </div>
+//   );
+// }
 
 // export default function AddExamToSession() {
 //   const router = useRouter();
@@ -57,8 +93,6 @@
 //   const [isSubmitting, setIsSubmitting] = useState(false);
 //   const [error, setError] = useState<string | null>(null);
 //   const [success, setSuccess] = useState<string | null>(null);
-//   const [publishNow, setPublishNow] = useState(true);
-//   const [loading, setLoading] = useState(true);
 
 //   const validateForm = () => {
 //     if (!formData.title.trim()) {
@@ -73,7 +107,7 @@
 //       setError("المدة يجب أن تكون أكبر من الصفر");
 //       return false;
 //     }
-//     if (!publishNow && !formData.publishDate) {
+//     if (!formData.publishDate) {
 //       setError("تاريخ النشر مطلوب");
 //       return false;
 //     }
@@ -86,18 +120,6 @@
 //       ...prev,
 //       [name]: name === 'type' || name === 'durationMinutes' ? parseInt(value) as any : value,
 //     }));
-//     setError(null);
-//   };
-
-//   const handlePublishNowChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const shouldPublishNow = e.target.checked;
-//     setPublishNow(shouldPublishNow);
-//     if (shouldPublishNow) {
-//       setFormData(prev => ({
-//         ...prev,
-//         publishDate: new Date().toISOString().slice(0, 16),
-//       }));
-//     }
 //     setError(null);
 //   };
 
@@ -118,14 +140,17 @@
 //         throw new Error("Authentication required");
 //       }
 
+//       // Format dates exactly like in your working session update page
 //       const apiData = {
 //         title: formData.title,
 //         type: formData.type,
-//         startTime: new Date(formData.startTime).toISOString(),
-//         endTime: new Date(formData.endTime).toISOString(),
+//         startTime: `${formData.startTime}:00.000Z`,
+//         endTime: `${formData.endTime}:00.000Z`,
 //         durationMinutes: formData.durationMinutes,
-//         publishDate: publishNow ? new Date().toISOString() : new Date(formData.publishDate).toISOString(),
+//         publishDate: `${formData.publishDate}:00.000Z`,
 //       };
+
+//       console.log("Submitting exam data:", apiData);
 
 //       const response = await fetch(
 //         `${process.env.NEXT_PUBLIC_API_URL}/api/Teacher/AddExamToSession/${sessionId}`,
@@ -146,7 +171,7 @@
 
 //       setSuccess(arabicTranslations.examCreated);
       
-//       // Reset form
+//       // Reset form with current datetime
 //       setFormData({
 //         title: '',
 //         type: 0,
@@ -155,7 +180,6 @@
 //         durationMinutes: 60,
 //         publishDate: new Date().toISOString().slice(0, 16),
 //       });
-//       setPublishNow(true);
 
 //       // Redirect after 2 seconds
 //       setTimeout(() => {
@@ -163,22 +187,13 @@
 //       }, 2000);
 
 //     } catch (err) {
+//       console.error("Error creating exam:", err);
 //       setError(err instanceof Error ? err.message : arabicTranslations.errorOccurred);
 //     } finally {
 //       setIsSubmitting(false);
 //     }
 //   };
 
-
-//   // if (loading) {
-//   //   return (
-//   //     <div className="flex justify-center items-center h-64">
-//   //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-//   //     </div>
-//   //   );
-//   // }
-
-//   // If we have a success message, show it and then redirect
 //   if (success) {
 //     return (
 //       <div className="container mx-auto px-4 py-8 text-center" dir="rtl">
@@ -265,27 +280,13 @@
 
 //         <div className="mb-6">
 //           <h2 className="text-xl font-semibold mb-4">{arabicTranslations.publishDate}</h2>
-//           <div className="flex items-center mb-4">
-//             <input
-//               type="checkbox"
-//               id="publishNow"
-//               checked={publishNow}
-//               onChange={handlePublishNowChange}
-//               className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ml-2"
-//             />
-//             <label htmlFor="publishNow" className="block text-lg font-medium text-gray-700">
-//               {arabicTranslations.publishNow}
-//             </label>
-//           </div>
-//           {!publishNow && (
-//             <InputField
-//               id="publishDate"
-//               type="datetime-local"
-//               value={formData.publishDate}
-//               onChange={handleChange}
-//               required
-//             />
-//           )}
+//           <InputField
+//             id="publishDate"
+//             type="datetime-local"
+//             value={formData.publishDate}
+//             onChange={handleChange}
+//             required
+//           />
 //         </div>
 
 //         <div className="flex justify-end gap-4">
@@ -316,41 +317,6 @@
 //   );
 // }
 
-// function InputField({ id, type = 'text', value, onChange, required = false, placeholder = '', min }: any) {
-//   return (
-//     <div className="mb-4">
-//       <input
-//         type={type}
-//         id={id}
-//         name={id}
-//         value={value}
-//         onChange={onChange}
-//         required={required}
-//         min={min}
-//         placeholder={placeholder}
-//         className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-right"
-//       />
-//     </div>
-//   );
-// }
-
-// function SelectField({ id, value, onChange, options }: any) {
-//   return (
-//     <div className="mb-4">
-//       <select
-//         id={id}
-//         name={id}
-//         value={value}
-//         onChange={onChange}
-//         className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-right"
-//       >
-//         {options.map((opt: any) => (
-//           <option key={opt.value} value={opt.value}>{opt.label}</option>
-//         ))}
-//       </select>
-//     </div>
-//   );
-// }
 
 
 
@@ -377,7 +343,6 @@ interface ExamFormData {
   startTime: string;
   endTime: string;
   durationMinutes: number;
-  publishDate: string;
 }
 
 const arabicTranslations = {
@@ -389,7 +354,6 @@ const arabicTranslations = {
   final: 'اختبار نهائي',
   startDate: 'تاريخ ووقت البدء',
   endDate: 'تاريخ ووقت الانتهاء',
-  publishDate: 'تاريخ النشر',
   duration: 'المدة (دقائق)',
   createExam: 'إنشاء الاختبار',
   creatingExam: 'جاري إنشاء الاختبار...',
@@ -452,7 +416,6 @@ export default function AddExamToSession() {
     startTime: new Date().toISOString().slice(0, 16),
     endTime: new Date(Date.now() + 60 * 60 * 1000).toISOString().slice(0, 16),
     durationMinutes: 60,
-    publishDate: new Date().toISOString().slice(0, 16),
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -470,10 +433,6 @@ export default function AddExamToSession() {
     }
     if (formData.durationMinutes <= 0) {
       setError("المدة يجب أن تكون أكبر من الصفر");
-      return false;
-    }
-    if (!formData.publishDate) {
-      setError("تاريخ النشر مطلوب");
       return false;
     }
     return true;
@@ -505,14 +464,12 @@ export default function AddExamToSession() {
         throw new Error("Authentication required");
       }
 
-      // Format dates exactly like in your working session update page
       const apiData = {
         title: formData.title,
         type: formData.type,
         startTime: `${formData.startTime}:00.000Z`,
         endTime: `${formData.endTime}:00.000Z`,
         durationMinutes: formData.durationMinutes,
-        publishDate: `${formData.publishDate}:00.000Z`,
       };
 
       console.log("Submitting exam data:", apiData);
@@ -543,7 +500,6 @@ export default function AddExamToSession() {
         startTime: new Date().toISOString().slice(0, 16),
         endTime: new Date(Date.now() + 60 * 60 * 1000).toISOString().slice(0, 16),
         durationMinutes: 60,
-        publishDate: new Date().toISOString().slice(0, 16),
       });
 
       // Redirect after 2 seconds
@@ -640,17 +596,6 @@ export default function AddExamToSession() {
             onChange={handleChange}
             required
             min="1"
-          />
-        </div>
-
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-4">{arabicTranslations.publishDate}</h2>
-          <InputField
-            id="publishDate"
-            type="datetime-local"
-            value={formData.publishDate}
-            onChange={handleChange}
-            required
           />
         </div>
 
