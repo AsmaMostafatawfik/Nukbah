@@ -1,7 +1,8 @@
+
 'use client';
 import { useState, useEffect, Fragment } from 'react';
 import Link from 'next/link';
-import { Search, Plus, Edit, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, ChevronDown, ChevronUp, User } from 'lucide-react';
 
 interface Student {
   id: number;
@@ -15,7 +16,6 @@ interface Student {
   educationalStage: number;
   gradeLevel: number;
   image: string | null;
- 
 }
 
 export default function StudentsPage() {
@@ -23,7 +23,6 @@ export default function StudentsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [expandedStudent, setExpandedStudent] = useState<number | null>(null);
 
   useEffect(() => {
@@ -33,7 +32,7 @@ export default function StudentsPage() {
         if (!token) {
           throw new Error('Authentication required');
         }
-          const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://elearning1.runasp.net';
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://elearning1.runasp.net';
         const response = await fetch(`${API_URL}/api/Admin/Students`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -94,9 +93,7 @@ export default function StudentsPage() {
                          student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          student.phoneNumber.includes(searchTerm);
 
-   
-
-    return matchesSearch ;
+    return matchesSearch;
   });
 
   const getGenderText = (gender: number) => {
@@ -136,19 +133,19 @@ export default function StudentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6" dir="rtl">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6" dir="rtl">
       {/* Page Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <h1 className="text-2xl font-bold text-gray-800">إدارة الطلاب</h1>
-        <div className="flex gap-4 w-full md:w-auto">
+        {/* <div className="flex gap-4 w-full md:w-auto">
           <Link 
             href="/admin/students/add"
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition whitespace-nowrap"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition whitespace-nowrap text-sm md:text-base"
           >
             <Plus size={18} />
             إضافة طالب جديد
           </Link>
-        </div>
+        </div> */}
       </div>
 
       {/* Search and Filters */}
@@ -159,32 +156,134 @@ export default function StudentsPage() {
             <input 
               type="text" 
               placeholder="ابحث عن طالب..." 
-              className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          {/* <select 
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
-          >
-            <option value="all">جميع الحالات</option>
-            <option value="active">نشط</option>
-            <option value="inactive">غير نشط</option>
-          </select> */}
         </div>
       </div>
 
-      {/* Students Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      {/* Students Table - Mobile Cards */}
+      <div className="md:hidden space-y-4">
+        {filteredStudents.length === 0 ? (
+          <div className="bg-white p-4 rounded-lg shadow text-center text-gray-500">
+            لا يوجد طلاب متطابقون مع معايير البحث
+          </div>
+        ) : (
+          filteredStudents.map((student) => (
+            <div key={student.id} className="bg-white rounded-lg shadow overflow-hidden">
+              <div 
+                className="p-4 flex justify-between items-center cursor-pointer"
+                onClick={() => toggleStudentExpand(student.id)}
+              >
+                <div className="flex items-center gap-3">
+                  {student.image ? (
+                    <img 
+                      src={`https://elearning1.runasp.net${student.image}`} 
+                      alt={student.fullName}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                      <User className="text-gray-500" size={18} />
+                    </div>
+                  )}
+                  <div>
+                    <div className="font-medium text-gray-900">{student.fullName}</div>
+                    <div className="text-sm text-gray-500">{student.phoneNumber}</div>
+                  </div>
+                </div>
+                <button className="text-gray-600">
+                  {expandedStudent === student.id ? (
+                    <ChevronUp size={18} />
+                  ) : (
+                    <ChevronDown size={18} />
+                  )}
+                </button>
+              </div>
+
+              {expandedStudent === student.id && (
+                <div className="p-4 border-t">
+                  <div className="space-y-4">
+                    {/* Personal Information */}
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-gray-900">المعلومات الشخصية</h4>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <span className="text-gray-500">الجنس:</span>
+                          <span className="font-medium block">{getGenderText(student.gender)}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">العمر:</span>
+                          <span className="font-medium block">{student.age}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Contact Information */}
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-gray-900">معلومات التواصل</h4>
+                      <div className="space-y-1 text-sm">
+                        <div>
+                          <span className="text-gray-500">البريد الإلكتروني:</span>
+                          <span className="font-medium block">{student.email}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">هاتف ولي الأمر:</span>
+                          <span className="font-medium block">{student.parentPhoneNumber}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Educational Information */}
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-gray-900">المعلومات التعليمية</h4>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <span className="text-gray-500">المدرسة:</span>
+                          <span className="font-medium block">{student.schoolName}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">المرحلة:</span>
+                          <span className="font-medium block">{getStageText(student.educationalStage)}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">الصف:</span>
+                          <span className="font-medium block">{getGradeText(student.gradeLevel)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex justify-end gap-2 pt-2">
+                      <button 
+                        className="text-red-600 hover:text-red-900 p-2 rounded-full hover:bg-red-50"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(student.id);
+                        }}
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Students Table - Desktop */}
+      <div className="hidden md:block bg-white rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead className="bg-gray-100">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الطالب</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المعلومات الأساسية</th>
-                {/* <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th> */}
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">معلومات التواصل</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المعلومات التعليمية</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">إجراءات</th>
               </tr>
             </thead>
@@ -199,7 +298,7 @@ export default function StudentsPage() {
                 filteredStudents.map((student) => (
                   <Fragment key={student.id}>
                     <tr className="hover:bg-gray-50 cursor-pointer" onClick={() => toggleStudentExpand(student.id)}>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           {student.image ? (
                             <img 
@@ -209,38 +308,26 @@ export default function StudentsPage() {
                             />
                           ) : (
                             <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-gray-500 text-sm">
-                                {student.fullName.split(' ').map(n => n[0]).join('')}
-                              </span>
+                              <User className="text-gray-500" size={18} />
                             </div>
                           )}
                           <div className="mr-4">
                             <div className="text-sm font-medium text-gray-900">{student.fullName}</div>
-                            <div className="text-sm text-gray-500">{student.email}</div>
+                            <div className="text-sm text-gray-500">{getGenderText(student.gender)}, {student.age} سنة</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900">{student.phoneNumber}</div>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{student.email}</div>
+                        <div className="text-sm text-gray-500">{student.phoneNumber}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{student.schoolName}</div>
                         <div className="text-sm text-gray-500">{getStageText(student.educationalStage)} - {getGradeText(student.gradeLevel)}</div>
                       </td>
-                      {/* <td className="px-6 py-4">
-                        <span className={`px-2 py-1 text-xs rounded-full ${
-                          student.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                          {student.isActive ? 'نشط' : 'غير نشط'}
-                        </span>
-                      </td> */}
-                      <td className="px-6 py-4 text-sm font-medium flex gap-2 justify-end">
-                        {/* <Link 
-                          href={`/admin/students/edit/${student.id}`}
-                          className="text-blue-600 hover:text-blue-900 p-1"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Edit size={18} />
-                        </Link> */}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-2 justify-end">
                         <button 
-                          className="text-red-600 hover:text-red-900 p-1"
+                          className="text-red-600 hover:text-red-900 p-1 hover:bg-red-50 rounded-full"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDelete(student.id);
@@ -248,7 +335,7 @@ export default function StudentsPage() {
                         >
                           <Trash2 size={18} />
                         </button>
-                        <button className="text-gray-600 hover:text-gray-900 p-1">
+                        <button className="text-gray-600 hover:text-gray-900 p-1 hover:bg-gray-50 rounded-full">
                           {expandedStudent === student.id ? (
                             <ChevronUp size={18} />
                           ) : (
@@ -316,16 +403,6 @@ export default function StudentsPage() {
                                   <span className="font-medium">{getGradeText(student.gradeLevel)}</span>
                                 </div>
                               </div>
-                              {student.image && (
-                                <div className="mt-4">
-                                  <h4 className="font-medium text-lg text-gray-900 border-b pb-2">صورة الطالب</h4>
-                                  <img 
-                                    src={`data:image/jpeg;base64,${student.image}`} 
-                                    alt={student.fullName}
-                                    className="w-24 h-24 rounded object-cover mt-2"
-                                  />
-                                </div>
-                              )}
                             </div>
                           </div>
                         </td>
@@ -340,22 +417,24 @@ export default function StudentsPage() {
       </div>
 
       {/* Pagination */}
-      <div className="flex flex-col md:flex-row justify-between items-center bg-white p-4 rounded-lg shadow mt-4">
-        <div className="text-sm text-gray-500 mb-2 md:mb-0">
-          عرض 1 إلى {filteredStudents.length} من {filteredStudents.length} طالب
+      {filteredStudents.length > 0 && (
+        <div className="flex flex-col md:flex-row justify-between items-center bg-white p-4 rounded-lg shadow mt-4">
+          <div className="text-sm text-gray-500 mb-2 md:mb-0">
+            عرض 1 إلى {filteredStudents.length} من {filteredStudents.length} طالب
+          </div>
+          <div className="flex gap-1">
+            <button className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 hover:bg-gray-50">
+              السابق
+            </button>
+            <button className="px-3 py-1 border border-gray-300 rounded-md text-sm bg-blue-600 text-white">
+              1
+            </button>
+            <button className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50">
+              التالي
+            </button>
+          </div>
         </div>
-        <div className="flex gap-1">
-          <button className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50">
-            السابق
-          </button>
-          <button className="px-3 py-1 border border-gray-300 rounded-md text-sm bg-blue-600 text-white">
-            1
-          </button>
-          <button className="px-3 py-1 border border-gray-300 rounded-md text-sm">
-            التالي
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
